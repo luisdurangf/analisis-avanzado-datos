@@ -1,0 +1,297 @@
+---
+title: "Taller 2 - Análisis Avanzado de Datos"
+subtitle: "Comparación de Modelos No Paramétricos y Semiparamétricos"
+author: "Luis Durán"
+format:
+  html:
+    toc: true
+    number-sections: true
+    theme: cosmo
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Introducción
+
+El presente trabajo tiene como objetivo analizar y comparar diferentes enfoques de modelamiento estadístico aplicados al conjunto de datos **Auto** de la librería ISLR2. En particular, se estudia la relación entre el consumo de combustible (`mpg`) y la potencia del motor (`horsepower`).
+
+Se consideran tres grandes paradigmas de modelamiento:
+
+- 1. Modelos polinomiales globales
+- 2. Modelos basados en funciones (splines)
+- 3. Modelos de regresión local
+
+El criterio de comparación es el **Error Cuadrático Medio (ECM)** estimado mediante validación cruzada y validación externa.
+
+---
+
+# Carga y preparación de los datos
+```{r}
+library(ISLR2)
+library(splines)
+
+data(Auto)
+Auto <- na.omit(Auto)
+n <- nrow(Auto)
+
+summary(Auto)
+
+# GRÁFICO 1: RELACIÓN ENTRE VARIABLES
+
+plot(Auto$horsepower, Auto$mpg,
+     pch=16, col="gray",
+     xlab="Horsepower",
+     ylab="MPG",
+     main="Relación entre horsepower y mpg")
+```
+Se observa una relación no lineal negativa entre la potencia del motor y el rendimiento de combustible, lo que justifica el uso de modelos no lineales en el análisis.
+
+---
+
+# División de datos
+```{r}
+set.seed(123)
+
+train_idx <- sample(1:n, size = 0.9*n)
+
+train <- Auto[train_idx, ]
+test  <- Auto[-train_idx, ]
+
+dim(train)
+dim(test)
+```
+---
+
+# Validación de knots
+```{r}
+K <- 10
+folds <- sample(1:10, nrow(train), replace=TRUE)
+
+cv_errors <- matrix(NA, nrow=10, ncol=K)
+
+for (k in 1:K) {
+  for (j in 1:10) {
+    
+    train_fold <- train[folds != j, ]
+    val_fold   <- train[folds == j, ]
+    
+    if(nrow(val_fold) == 0) next
+    
+    model <- lm(mpg ~ bs(horsepower, df=k), data=train_fold)
+    
+    pred <- predict(model, newdata=val_fold)
+    
+    cv_errors[j, k] <- mean((val_fold$mpg - pred)^2)
+  }
+}
+
+best_k <- which.min(colMeans(cv_errors, na.rm=TRUE))
+
+best_k
+```
+El número óptimo de knots seleccionado fue `r best_k`. Este resultado indica que un modelo con complejidad intermedia logra capturar adecuadamente la relación entre las variables, evitando tanto el subajuste como el sobreajuste.
+
+---
+
+# Comparación de modelos
+```{r}
+cv_poly <- c()
+cv_spline <- c()
+cv_smooth <- c()
+
+for (j in 1:10) {
+  
+  train_fold <- train[folds != j, ]
+  val_fold   <- train[folds == j, ]
+  
+  if(nrow(val_fold) == 0) next
+  
+  m1 <- lm(mpg ~ poly(horsepower, 2), data=train_fold)
+  p1 <- predict(m1, val_fold)
+  
+  m2 <- lm(mpg ~ bs(horsepower, df=best_k), data=train_fold)
+  p2 <- predict(m2, val_fold)
+  
+  m3 <- smooth.spline(train_fold$horsepower, train_fold$mpg)
+  p3 <- predict(m3, val_fold$horsepower)$y
+  
+  cv_poly   <- c(cv_poly, mean((val_fold$mpg - p1)^2))
+  cv_spline <- c(cv_spline, mean((val_fold$mpg - p2)^2))
+  cv_smooth <- c(cv_smooth, mean((val_fold$mpg - p3)^2))
+}
+
+mean(cv_poly)
+mean(cv_spline)
+mean(cv_smooth)
+```
+El modelo de regression spline presenta el menor ECM, seguido por el modelo polinomial. El smoothing spline muestra el peor desempeño. Esto sugiere que una mayor flexibilidad no necesariamente mejora la capacidad predictiva del modelo.
+
+---
+```{r}
+# GRÁFICO 2: COMPARACIÓN DE MODELOS
+
+model_poly <- lm(mpg ~ poly(horsepower, 2), data=train)
+model_spline <- lm(mpg ~ bs(horsepower, df=best_k), data=train)
+model_loess <- loess(mpg ~ horsepower, data=train)
+
+hp_seq <- seq(min(Auto$horsepower), max(Auto$horsepower), length=100)
+
+pred_poly <- predict(model_poly, data.frame(horsepower=hp_seq))
+pred_spline <- predict(model_spline, data.frame(horsepower=hp_seq))
+pred_loess <- predict(model_loess, data.frame(horsepower=hp_seq))
+
+plot(Auto$horsepower, Auto$mpg,
+     pch=16, col="gray",
+     main="Comparación de modelos")
+
+lines(hp_seq, pred_poly, lwd=2)
+lines(hp_seq, pred_spline, lwd=2, lty=2)
+lines(hp_seq, pred_loess, lwd=2, lty=3)
+
+legend("topright",
+       legend=c("Polinomio","Spline","Loess"),
+       lty=c(1,2,3),
+       lwd=2)
+```
+El gráfico muestra que el modelo spline presenta mayor flexibilidad, mientras que el modelo polinomial captura la tendencia general de manera más estable. El modelo LOESS presenta mayor variabilidad en su ajuste.
+
+---
+
+# Loess
+```{r}
+loess1 <- loess(mpg ~ horsepower, data=train, degree=1)
+loess2 <- loess(mpg ~ horsepower, data=train, degree=2)
+
+# Predicciones seguras
+pred1 <- predict(loess1, newdata=test)
+pred2 <- predict(loess2, newdata=test)
+
+# Verificar si hay NA
+sum(is.na(pred1))
+sum(is.na(pred2))
+
+# Calcular ECM solo con valores válidos
+ecm_loess1 <- mean((test$mpg - pred1)^2, na.rm=TRUE)
+ecm_loess2 <- mean((test$mpg - pred2)^2, na.rm=TRUE)
+
+ecm_loess1
+ecm_loess2
+```
+Los resultados muestran que el modelo LOESS presenta errores superiores en comparación con los modelos anteriores, lo cual puede explicarse por su alta sensibilidad a la estructura local de los datos y su limitada capacidad de extrapolación.
+
+---
+
+# Test final
+```{r}
+model_poly <- lm(mpg ~ poly(horsepower, 2), data=train)
+pred_poly <- predict(model_poly, test)
+ecm_poly <- mean((test$mpg - pred_poly)^2)
+
+model_spline <- lm(mpg ~ bs(horsepower, df=best_k), data=train)
+pred_spline <- predict(model_spline, test)
+ecm_spline <- mean((test$mpg - pred_spline)^2)
+
+model_loess <- loess(mpg ~ horsepower, data=train, degree=1)
+pred_loess <- predict(model_loess, test)
+ecm_loess <- mean((test$mpg - pred_loess)^2, na.rm=TRUE)
+
+ecm_poly
+ecm_spline
+ecm_loess
+```
+En el conjunto de prueba, el modelo polinomial presenta el menor ECM, seguido por el modelo LOESS y finalmente el modelo spline.
+
+Este resultado es relevante, ya que el modelo spline había mostrado mejor desempeño en validación cruzada. Esto sugiere un posible sobreajuste, donde el modelo se ajusta mejor a los datos de entrenamiento pero pierde capacidad de generalización.
+
+---
+# Repetición del experimento 10 veces
+
+## Construcción de la función
+```{r}
+run_experiment <- function(seed = 123) {
+  
+  set.seed(seed)
+  
+  train_idx <- sample(1:n, size = 0.9*n)
+  train <- Auto[train_idx, ]
+  test  <- Auto[-train_idx, ]
+
+  K <- 10
+  folds <- sample(1:10, nrow(train), replace=TRUE)
+  cv_errors <- matrix(NA, nrow=10, ncol=K)
+  
+  for (k in 1:K) {
+    for (j in 1:10) {
+      
+      train_fold <- train[folds != j, ]
+      val_fold   <- train[folds == j, ]
+      
+      if(nrow(val_fold) == 0) next
+      
+      model <- lm(mpg ~ bs(horsepower, df=k), data=train_fold)
+      pred <- predict(model, newdata=val_fold)
+      
+      cv_errors[j, k] <- mean((val_fold$mpg - pred)^2)
+    }
+  }
+  
+  best_k <- which.min(colMeans(cv_errors, na.rm=TRUE))
+  
+  model_poly <- lm(mpg ~ poly(horsepower, 2), data=train)
+  pred_poly <- predict(model_poly, test)
+  ecm_poly <- mean((test$mpg - pred_poly)^2)
+  
+  model_spline <- lm(mpg ~ bs(horsepower, df=best_k), data=train)
+  pred_spline <- predict(model_spline, test)
+  ecm_spline <- mean((test$mpg - pred_spline)^2)
+  
+  model_loess <- loess(mpg ~ horsepower, data=train, degree=1)
+  pred_loess <- predict(model_loess, test)
+  ecm_loess <- mean((test$mpg - pred_loess)^2, na.rm=TRUE)
+  
+  return(c(ecm_poly, ecm_spline, ecm_loess))
+}
+```
+
+## Ejecución del ejercicio
+```{r}
+set.seed(999)
+
+results <- replicate(10, run_experiment(sample(1:10000,1)))
+
+results <- t(results)
+colnames(results) <- c("Polinomio", "Spline", "Loess")
+
+results
+```
+
+```{r}
+boxplot(results,
+        main="Distribución del ECM en test",
+        ylab="ECM")
+```
+El boxplot muestra la variabilidad del error de predicción para cada modelo a través de múltiples particiones de los datos.
+
+Se observa que:
+
+- El modelo polinomial presenta una mediana competitiva y menor dispersión.
+- El modelo spline muestra variabilidad moderada, lo que indica sensibilidad a la muestra.
+- El modelo LOESS presenta mayor dispersión, reflejando menor estabilidad.
+
+El modelo polinomial resulta ser el más robusto, al presentar un buen desempeño promedio y menor variabilidad en el error de predicción.
+
+# Conclusiones
+
+El análisis comparativo entre modelos polinomiales, splines y regresión local permite evidenciar diferencias importantes en términos de capacidad predictiva y estabilidad.
+
+Los resultados muestran que:
+
+- El modelo spline presenta el mejor desempeño en validación cruzada, lo que indica mayor capacidad de ajuste.
+- Sin embargo, en el conjunto de prueba, el modelo polinomial obtiene el menor ECM, evidenciando mejor capacidad de generalización.
+- El modelo LOESS, aunque flexible, presenta mayor variabilidad y menor estabilidad.
+
+En conjunto, los resultados sugieren que un modelo de complejidad moderada, como el polinomio de grado 2, ofrece el mejor equilibrio entre sesgo y varianza en este problema.
+
+Este hallazgo resalta la importancia de evaluar los modelos en datos no observados y no basarse únicamente en el desempeño en entrenamiento o validación cruzada.
