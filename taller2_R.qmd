@@ -28,7 +28,9 @@ Universidad del Rosario
 
 </div>
 
-# Introducción
+# Parte I. Desarrollo del Problema 1
+
+## Introducción
 
 El presente trabajo tiene como objetivo analizar y comparar diferentes enfoques de modelamiento estadístico aplicados al conjunto de datos **Auto** de la librería `ISLR2`. En particular, se estudia la relación entre el consumo de combustible (`mpg`) y la potencia del motor (`horsepower`).
 
@@ -42,7 +44,7 @@ El criterio de comparación es el **Error Cuadrático Medio (ECM)** estimado med
 
 ---
 
-# Carga y preparación de los datos
+## Carga y preparación de los datos
 ```{r}
 library(ISLR2)
 library(splines)
@@ -65,7 +67,7 @@ Se observa una relación no lineal negativa entre la potencia del motor y el ren
 
 ---
 
-# División de datos
+## División de datos
 ```{r}
 set.seed(123)
 
@@ -79,7 +81,7 @@ dim(test)
 ```
 ---
 
-# Validación de knots
+## Validación de knots
 ```{r}
 K <- 10
 folds <- sample(1:10, nrow(train), replace=TRUE)
@@ -110,7 +112,7 @@ El número óptimo de knots seleccionado fue `r best_k`. Este resultado indica q
 
 ---
 
-# Comparación de modelos
+## Comparación de modelos
 ```{r}
 cv_poly <- c()
 cv_spline <- c()
@@ -174,7 +176,7 @@ El gráfico muestra que el modelo spline presenta mayor flexibilidad, mientras q
 
 ---
 
-# Loess
+## Loess
 ```{r}
 loess1 <- loess(mpg ~ horsepower, data=train, degree=1)
 loess2 <- loess(mpg ~ horsepower, data=train, degree=2)
@@ -198,7 +200,7 @@ Los resultados muestran que el modelo LOESS presenta errores superiores en compa
 
 ---
 
-# Test final
+## Test final
 ```{r}
 model_poly <- lm(mpg ~ poly(horsepower, 2), data=train)
 pred_poly <- predict(model_poly, test)
@@ -221,9 +223,9 @@ En el conjunto de prueba, el modelo polinomial presenta el menor ECM, seguido po
 Este resultado es relevante, ya que el modelo spline había mostrado mejor desempeño en validación cruzada. Esto sugiere un posible sobreajuste, donde el modelo se ajusta mejor a los datos de entrenamiento pero pierde capacidad de generalización.
 
 ---
-# Repetición del experimento 10 veces
+## Repetición del experimento 10 veces
 
-## Construcción de la función
+### Construcción de la función
 ```{r}
 run_experiment <- function(seed = 123) {
   
@@ -270,7 +272,7 @@ run_experiment <- function(seed = 123) {
 }
 ```
 
-## Ejecución del ejercicio
+### Ejecución del ejercicio
 ```{r}
 set.seed(999)
 
@@ -297,7 +299,7 @@ Se observa que:
 
 El modelo polinomial resulta ser el más robusto, al presentar un buen desempeño promedio y menor variabilidad en el error de predicción.
 
-# Conclusiones
+## Conclusiones
 
 El análisis comparativo entre modelos polinomiales, splines y regresión local permite evidenciar diferencias importantes en términos de capacidad predictiva y estabilidad.
 
@@ -310,3 +312,25 @@ Los resultados muestran que:
 En conjunto, los resultados sugieren que un modelo de complejidad moderada, como el polinomio de grado 2, ofrece el mejor equilibrio entre sesgo y varianza en este problema.
 
 Este hallazgo resalta la importancia de evaluar los modelos en datos no observados y no basarse únicamente en el desempeño en entrenamiento o validación cruzada.
+
+# Parte II. Desarrollo del Problema 2
+
+## Estimador de Nadaraya-Watson para la i-ésima unidad
+
+Aquí se define el estimador de Nadaraya-Watson individual como:
+
+$$
+\hat{x}(t)=\frac{\sum_{j=1}^{n_i} K_h(t-t_{ij})x_{ij}}{\sum_{j=1}^{n_i} K_h(t-t_{ij})}
+$$
+
+## Estimador de la función media
+
+La función media se estima mediante:
+
+$$
+\hat{\mu}(t)=\frac{\sum_{i=1}^{N}\sum_{j=1}^{n_i} K_h(t-t_{ij})x_{ij}}{\sum_{i=1}^{N}\sum_{j=1}^{n_i} K_h(t-t_{ij})}
+$$
+
+## Interpretación teórica
+
+El estimador de Nadaraya-Watson corresponde a un promedio ponderado local donde las observaciones cercanas al punto de evaluación reciben mayor peso. Este enfoque permite suavizar observaciones ruidosas y estimar funciones subyacentes de manera no paramétrica.
