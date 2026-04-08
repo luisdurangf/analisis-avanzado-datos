@@ -74,6 +74,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="taller2_R_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="taller2_R_files/libs/bootstrap/bootstrap-67270d1595a62d14f123c043d4fb2f18.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -85,19 +114,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Tabla de contenidos</h2>
    
   <ul>
-  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción"><span class="header-section-number">1</span> Introducción</a></li>
-  <li><a href="#carga-y-preparación-de-los-datos" id="toc-carga-y-preparación-de-los-datos" class="nav-link" data-scroll-target="#carga-y-preparación-de-los-datos"><span class="header-section-number">2</span> Carga y preparación de los datos</a></li>
-  <li><a href="#división-de-datos" id="toc-división-de-datos" class="nav-link" data-scroll-target="#división-de-datos"><span class="header-section-number">3</span> División de datos</a></li>
-  <li><a href="#validación-de-knots" id="toc-validación-de-knots" class="nav-link" data-scroll-target="#validación-de-knots"><span class="header-section-number">4</span> Validación de knots</a></li>
-  <li><a href="#comparación-de-modelos" id="toc-comparación-de-modelos" class="nav-link" data-scroll-target="#comparación-de-modelos"><span class="header-section-number">5</span> Comparación de modelos</a></li>
-  <li><a href="#loess" id="toc-loess" class="nav-link" data-scroll-target="#loess"><span class="header-section-number">6</span> Loess</a></li>
-  <li><a href="#test-final" id="toc-test-final" class="nav-link" data-scroll-target="#test-final"><span class="header-section-number">7</span> Test final</a></li>
-  <li><a href="#repetición-del-experimento-10-veces" id="toc-repetición-del-experimento-10-veces" class="nav-link" data-scroll-target="#repetición-del-experimento-10-veces"><span class="header-section-number">8</span> Repetición del experimento 10 veces</a>
+  <li><a href="#parte-i.-desarrollo-del-problema-1" id="toc-parte-i.-desarrollo-del-problema-1" class="nav-link active" data-scroll-target="#parte-i.-desarrollo-del-problema-1"><span class="header-section-number">1</span> Parte I. Desarrollo del Problema 1</a>
   <ul class="collapse">
-  <li><a href="#construcción-de-la-función" id="toc-construcción-de-la-función" class="nav-link" data-scroll-target="#construcción-de-la-función"><span class="header-section-number">8.1</span> Construcción de la función</a></li>
-  <li><a href="#ejecución-del-ejercicio" id="toc-ejecución-del-ejercicio" class="nav-link" data-scroll-target="#ejecución-del-ejercicio"><span class="header-section-number">8.2</span> Ejecución del ejercicio</a></li>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link" data-scroll-target="#introducción"><span class="header-section-number">1.1</span> Introducción</a></li>
+  <li><a href="#carga-y-preparación-de-los-datos" id="toc-carga-y-preparación-de-los-datos" class="nav-link" data-scroll-target="#carga-y-preparación-de-los-datos"><span class="header-section-number">1.2</span> Carga y preparación de los datos</a></li>
+  <li><a href="#división-de-datos" id="toc-división-de-datos" class="nav-link" data-scroll-target="#división-de-datos"><span class="header-section-number">1.3</span> División de datos</a></li>
+  <li><a href="#validación-de-knots" id="toc-validación-de-knots" class="nav-link" data-scroll-target="#validación-de-knots"><span class="header-section-number">1.4</span> Validación de knots</a></li>
+  <li><a href="#comparación-de-modelos" id="toc-comparación-de-modelos" class="nav-link" data-scroll-target="#comparación-de-modelos"><span class="header-section-number">1.5</span> Comparación de modelos</a></li>
+  <li><a href="#loess" id="toc-loess" class="nav-link" data-scroll-target="#loess"><span class="header-section-number">1.6</span> Loess</a></li>
+  <li><a href="#test-final" id="toc-test-final" class="nav-link" data-scroll-target="#test-final"><span class="header-section-number">1.7</span> Test final</a></li>
+  <li><a href="#repetición-del-experimento-10-veces" id="toc-repetición-del-experimento-10-veces" class="nav-link" data-scroll-target="#repetición-del-experimento-10-veces"><span class="header-section-number">1.8</span> Repetición del experimento 10 veces</a>
+  <ul class="collapse">
+  <li><a href="#construcción-de-la-función" id="toc-construcción-de-la-función" class="nav-link" data-scroll-target="#construcción-de-la-función"><span class="header-section-number">1.8.1</span> Construcción de la función</a></li>
+  <li><a href="#ejecución-del-ejercicio" id="toc-ejecución-del-ejercicio" class="nav-link" data-scroll-target="#ejecución-del-ejercicio"><span class="header-section-number">1.8.2</span> Ejecución del ejercicio</a></li>
   </ul></li>
-  <li><a href="#conclusiones" id="toc-conclusiones" class="nav-link" data-scroll-target="#conclusiones"><span class="header-section-number">9</span> Conclusiones</a></li>
+  <li><a href="#conclusiones" id="toc-conclusiones" class="nav-link" data-scroll-target="#conclusiones"><span class="header-section-number">1.9</span> Conclusiones</a></li>
+  </ul></li>
+  <li><a href="#parte-ii.-desarrollo-del-problema-2" id="toc-parte-ii.-desarrollo-del-problema-2" class="nav-link" data-scroll-target="#parte-ii.-desarrollo-del-problema-2"><span class="header-section-number">2</span> Parte II. Desarrollo del Problema 2</a>
+  <ul class="collapse">
+  <li><a href="#estimador-de-nadaraya-watson-para-la-i-ésima-unidad" id="toc-estimador-de-nadaraya-watson-para-la-i-ésima-unidad" class="nav-link" data-scroll-target="#estimador-de-nadaraya-watson-para-la-i-ésima-unidad"><span class="header-section-number">2.1</span> Estimador de Nadaraya-Watson para la i-ésima unidad</a></li>
+  <li><a href="#estimador-de-la-función-media" id="toc-estimador-de-la-función-media" class="nav-link" data-scroll-target="#estimador-de-la-función-media"><span class="header-section-number">2.2</span> Estimador de la función media</a></li>
+  <li><a href="#interpretación-teórica" id="toc-interpretación-teórica" class="nav-link" data-scroll-target="#interpretación-teórica"><span class="header-section-number">2.3</span> Interpretación teórica</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -139,8 +177,10 @@ Escuela de Ingenieria, Ciencia y Tecnología<br>
 Universidad del Rosario</p>
 </div>
 </div>
-<section id="introducción" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Introducción</h1>
+<section id="parte-i.-desarrollo-del-problema-1" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Parte I. Desarrollo del Problema 1</h1>
+<section id="introducción" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="introducción"><span class="header-section-number">1.1</span> Introducción</h2>
 <p>El presente trabajo tiene como objetivo analizar y comparar diferentes enfoques de modelamiento estadístico aplicados al conjunto de datos <strong>Auto</strong> de la librería <code>ISLR2</code>. En particular, se estudia la relación entre el consumo de combustible (<code>mpg</code>) y la potencia del motor (<code>horsepower</code>).</p>
 <p>Se consideran tres grandes paradigmas de modelamiento:</p>
 <ul>
@@ -157,8 +197,8 @@ Universidad del Rosario</p>
 <p>El criterio de comparación es el <strong>Error Cuadrático Medio (ECM)</strong> estimado mediante validación cruzada y validación externa.</p>
 <hr>
 </section>
-<section id="carga-y-preparación-de-los-datos" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Carga y preparación de los datos</h1>
+<section id="carga-y-preparación-de-los-datos" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="carga-y-preparación-de-los-datos"><span class="header-section-number">1.2</span> Carga y preparación de los datos</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
@@ -204,8 +244,8 @@ Universidad del Rosario</p>
 <p>Se observa una relación no lineal negativa entre la potencia del motor y el rendimiento de combustible, lo que justifica el uso de modelos no lineales en el análisis.</p>
 <hr>
 </section>
-<section id="división-de-datos" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> División de datos</h1>
+<section id="división-de-datos" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="división-de-datos"><span class="header-section-number">1.3</span> División de datos</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -225,8 +265,8 @@ Universidad del Rosario</p>
 </div>
 <hr>
 </section>
-<section id="validación-de-knots" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Validación de knots</h1>
+<section id="validación-de-knots" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="validación-de-knots"><span class="header-section-number">1.4</span> Validación de knots</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">10</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>folds <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="fu">nrow</span>(train), <span class="at">replace=</span><span class="cn">TRUE</span>)</span>
@@ -259,8 +299,8 @@ Universidad del Rosario</p>
 <p>El número óptimo de knots seleccionado fue 5. Este resultado indica que un modelo con complejidad intermedia logra capturar adecuadamente la relación entre las variables, evitando tanto el subajuste como el sobreajuste.</p>
 <hr>
 </section>
-<section id="comparación-de-modelos" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Comparación de modelos</h1>
+<section id="comparación-de-modelos" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="comparación-de-modelos"><span class="header-section-number">1.5</span> Comparación de modelos</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>cv_poly <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cv_spline <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
@@ -338,8 +378,8 @@ Universidad del Rosario</p>
 <p>El gráfico muestra que el modelo spline presenta mayor flexibilidad, mientras que el modelo polinomial captura la tendencia general de manera más estable. El modelo LOESS presenta mayor variabilidad en su ajuste.</p>
 <hr>
 </section>
-<section id="loess" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Loess</h1>
+<section id="loess" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="loess"><span class="header-section-number">1.6</span> Loess</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>loess1 <span class="ot">&lt;-</span> <span class="fu">loess</span>(mpg <span class="sc">~</span> horsepower, <span class="at">data=</span>train, <span class="at">degree=</span><span class="dv">1</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>loess2 <span class="ot">&lt;-</span> <span class="fu">loess</span>(mpg <span class="sc">~</span> horsepower, <span class="at">data=</span>train, <span class="at">degree=</span><span class="dv">2</span>)</span>
@@ -373,8 +413,8 @@ Universidad del Rosario</p>
 <p>Los resultados muestran que el modelo LOESS presenta errores superiores en comparación con los modelos anteriores, lo cual puede explicarse por su alta sensibilidad a la estructura local de los datos y su limitada capacidad de extrapolación.</p>
 <hr>
 </section>
-<section id="test-final" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Test final</h1>
+<section id="test-final" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="test-final"><span class="header-section-number">1.7</span> Test final</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>model_poly <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> <span class="fu">poly</span>(horsepower, <span class="dv">2</span>), <span class="at">data=</span>train)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>pred_poly <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_poly, test)</span>
@@ -405,10 +445,10 @@ Universidad del Rosario</p>
 <p>Este resultado es relevante, ya que el modelo spline había mostrado mejor desempeño en validación cruzada. Esto sugiere un posible sobreajuste, donde el modelo se ajusta mejor a los datos de entrenamiento pero pierde capacidad de generalización.</p>
 <hr>
 </section>
-<section id="repetición-del-experimento-10-veces" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Repetición del experimento 10 veces</h1>
-<section id="construcción-de-la-función" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="construcción-de-la-función"><span class="header-section-number">8.1</span> Construcción de la función</h2>
+<section id="repetición-del-experimento-10-veces" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="repetición-del-experimento-10-veces"><span class="header-section-number">1.8</span> Repetición del experimento 10 veces</h2>
+<section id="construcción-de-la-función" class="level3" data-number="1.8.1">
+<h3 data-number="1.8.1" class="anchored" data-anchor-id="construcción-de-la-función"><span class="header-section-number">1.8.1</span> Construcción de la función</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>run_experiment <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">seed =</span> <span class="dv">123</span>) {</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  </span>
@@ -455,8 +495,8 @@ Universidad del Rosario</p>
 <span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="ejecución-del-ejercicio" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="ejecución-del-ejercicio"><span class="header-section-number">8.2</span> Ejecución del ejercicio</h2>
+<section id="ejecución-del-ejercicio" class="level3" data-number="1.8.2">
+<h3 data-number="1.8.2" class="anchored" data-anchor-id="ejecución-del-ejercicio"><span class="header-section-number">1.8.2</span> Ejecución del ejercicio</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">999</span>)</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -502,8 +542,8 @@ Universidad del Rosario</p>
 <p>El modelo polinomial resulta ser el más robusto, al presentar un buen desempeño promedio y menor variabilidad en el error de predicción.</p>
 </section>
 </section>
-<section id="conclusiones" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Conclusiones</h1>
+<section id="conclusiones" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="conclusiones"><span class="header-section-number">1.9</span> Conclusiones</h2>
 <p>El análisis comparativo entre modelos polinomiales, splines y regresión local permite evidenciar diferencias importantes en términos de capacidad predictiva y estabilidad.</p>
 <p>Los resultados muestran que:</p>
 <ul>
@@ -513,6 +553,28 @@ Universidad del Rosario</p>
 </ul>
 <p>En conjunto, los resultados sugieren que un modelo de complejidad moderada, como el polinomio de grado 2, ofrece el mejor equilibrio entre sesgo y varianza en este problema.</p>
 <p>Este hallazgo resalta la importancia de evaluar los modelos en datos no observados y no basarse únicamente en el desempeño en entrenamiento o validación cruzada.</p>
+</section>
+</section>
+<section id="parte-ii.-desarrollo-del-problema-2" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Parte II. Desarrollo del Problema 2</h1>
+<section id="estimador-de-nadaraya-watson-para-la-i-ésima-unidad" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="estimador-de-nadaraya-watson-para-la-i-ésima-unidad"><span class="header-section-number">2.1</span> Estimador de Nadaraya-Watson para la i-ésima unidad</h2>
+<p>Aquí se define el estimador de Nadaraya-Watson individual como:</p>
+<p><span class="math display">\[
+\hat{x}(t)=\frac{\sum_{j=1}^{n_i} K_h(t-t_{ij})x_{ij}}{\sum_{j=1}^{n_i} K_h(t-t_{ij})}
+\]</span></p>
+</section>
+<section id="estimador-de-la-función-media" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="estimador-de-la-función-media"><span class="header-section-number">2.2</span> Estimador de la función media</h2>
+<p>La función media se estima mediante:</p>
+<p><span class="math display">\[
+\hat{\mu}(t)=\frac{\sum_{i=1}^{N}\sum_{j=1}^{n_i} K_h(t-t_{ij})x_{ij}}{\sum_{i=1}^{N}\sum_{j=1}^{n_i} K_h(t-t_{ij})}
+\]</span></p>
+</section>
+<section id="interpretación-teórica" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="interpretación-teórica"><span class="header-section-number">2.3</span> Interpretación teórica</h2>
+<p>El estimador de Nadaraya-Watson corresponde a un promedio ponderado local donde las observaciones cercanas al punto de evaluación reciben mayor peso. Este enfoque permite suavizar observaciones ruidosas y estimar funciones subyacentes de manera no paramétrica.</p>
+</section>
 </section>
 
 </main>
