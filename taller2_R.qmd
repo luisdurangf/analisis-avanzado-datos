@@ -1,21 +1,36 @@
 ---
-title: "Taller 2 - Análisis Avanzado de Datos"
-subtitle: "Comparación de Modelos No Paramétricos y Semiparamétricos"
-author: "Luis Durán"
+title: "Análisis Avanzado de Datos"
+subtitle: "Taller 2"
+author: "Luis Durán - Miguel Castelblanco"
+lang: es
 format:
   html:
-    toc: true
-    number-sections: true
     theme: cosmo
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    number-sections: true
+    page-layout: full
 execute:
   echo: true
   warning: false
   message: false
 ---
+<div style="display: flex; align-items: center; gap: 00px;">
+
+<img src="logo.png" width="120">
+
+<div>
+**Maestría en Matemáticas Aplicadas y Ciencias de la Computación**  
+Escuela de Ingenieria, Ciencia y Tecnología  
+Universidad del Rosario
+</div>
+
+</div>
 
 # Introducción
 
-El presente trabajo tiene como objetivo analizar y comparar diferentes enfoques de modelamiento estadístico aplicados al conjunto de datos **Auto** de la librería ISLR2. En particular, se estudia la relación entre el consumo de combustible (`mpg`) y la potencia del motor (`horsepower`).
+El presente trabajo tiene como objetivo analizar y comparar diferentes enfoques de modelamiento estadístico aplicados al conjunto de datos **Auto** de la librería `ISLR2`. En particular, se estudia la relación entre el consumo de combustible (`mpg`) y la potencia del motor (`horsepower`).
 
 Se consideran tres grandes paradigmas de modelamiento:
 
