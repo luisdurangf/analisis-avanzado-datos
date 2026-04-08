@@ -18,7 +18,7 @@ execute:
 ---
 <div style="display: flex; align-items: center; gap: 00px;">
 
-<img src="logo.png" width="120">
+<img src="https://raw.githubusercontent.com/luisdurangf/analisis-avanzado-datos/refs/heads/main/logo.png" width="120">
 
 <div>
 **Maestría en Matemáticas Aplicadas y Ciencias de la Computación**  
