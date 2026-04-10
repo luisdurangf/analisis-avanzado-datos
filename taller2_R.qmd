@@ -331,6 +331,50 @@ $$
 \hat{\mu}(t)=\frac{\sum_{i=1}^{N}\sum_{j=1}^{n_i} K_h(t-t_{ij})x_{ij}}{\sum_{i=1}^{N}\sum_{j=1}^{n_i} K_h(t-t_{ij})}
 $$
 
+## Ejemplo práctico en R
+
+Con el fin de ilustrar el funcionamiento del estimador de Nadaraya-Watson, se simula una muestra de observaciones provenientes de una función seno contaminada con ruido aleatorio.
+
+```{r}
+set.seed(999)
+
+# Generación de datos simulados
+t <- seq(0, 2*pi, length.out = 100)
+x <- sin(t) + rnorm(100, sd = 0.2)
+
+# Ajuste Nadaraya-Watson usando ksmooth
+nw_fit <- ksmooth(
+  x = t,
+  y = x,
+  kernel = "normal",
+  bandwidth = 0.3
+)
+
+# Visualización
+plot(t, x,
+     pch = 16,
+     col = "gray",
+     main = "Estimación de Nadaraya-Watson",
+     xlab = "t",
+     ylab = "x(t)")
+
+lines(nw_fit,
+      col = "black",
+      lwd = 3)
+```
+
+El gráfico anterior muestra cómo el estimador suaviza las observaciones ruidosas para aproximar la función subyacente mediante un promedio ponderado local.
+
+La línea roja representa la curva suavizada obtenida mediante el estimador de Nadaraya-Watson, mientras que los puntos grises corresponden a las observaciones originales.
+
 ## Interpretación teórica
 
-El estimador de Nadaraya-Watson corresponde a un promedio ponderado local donde las observaciones cercanas al punto de evaluación reciben mayor peso. Este enfoque permite suavizar observaciones ruidosas y estimar funciones subyacentes de manera no paramétrica.
+El estimador de Nadaraya-Watson corresponde a un promedio ponderado local donde las observaciones más cercanas al punto de evaluación reciben mayor peso mediante una función kernel.
+
+Este procedimiento permite:
+
+- Reducir el ruido presente en observaciones discretizadas.
+- Estimar funciones subyacentes sin asumir una forma paramétrica específica
+- Obtener aproximaciones suaves de datos funcionales
+
+En el contexto de análisis de datos funcionales, este estimador constituye una herramienta fundamental para la reconstrucción de trayectorias funcionales observadas con error.

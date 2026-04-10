@@ -134,7 +134,8 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#estimador-de-nadaraya-watson-para-la-i-ésima-unidad" id="toc-estimador-de-nadaraya-watson-para-la-i-ésima-unidad" class="nav-link" data-scroll-target="#estimador-de-nadaraya-watson-para-la-i-ésima-unidad"><span class="header-section-number">2.1</span> Estimador de Nadaraya-Watson para la i-ésima unidad</a></li>
   <li><a href="#estimador-de-la-función-media" id="toc-estimador-de-la-función-media" class="nav-link" data-scroll-target="#estimador-de-la-función-media"><span class="header-section-number">2.2</span> Estimador de la función media</a></li>
-  <li><a href="#interpretación-teórica" id="toc-interpretación-teórica" class="nav-link" data-scroll-target="#interpretación-teórica"><span class="header-section-number">2.3</span> Interpretación teórica</a></li>
+  <li><a href="#ejemplo-práctico-en-r" id="toc-ejemplo-práctico-en-r" class="nav-link" data-scroll-target="#ejemplo-práctico-en-r"><span class="header-section-number">2.3</span> Ejemplo práctico en R</a></li>
+  <li><a href="#interpretación-teórica" id="toc-interpretación-teórica" class="nav-link" data-scroll-target="#interpretación-teórica"><span class="header-section-number">2.4</span> Interpretación teórica</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -571,9 +572,56 @@ Universidad del Rosario</p>
 \hat{\mu}(t)=\frac{\sum_{i=1}^{N}\sum_{j=1}^{n_i} K_h(t-t_{ij})x_{ij}}{\sum_{i=1}^{N}\sum_{j=1}^{n_i} K_h(t-t_{ij})}
 \]</span></p>
 </section>
-<section id="interpretación-teórica" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="interpretación-teórica"><span class="header-section-number">2.3</span> Interpretación teórica</h2>
-<p>El estimador de Nadaraya-Watson corresponde a un promedio ponderado local donde las observaciones cercanas al punto de evaluación reciben mayor peso. Este enfoque permite suavizar observaciones ruidosas y estimar funciones subyacentes de manera no paramétrica.</p>
+<section id="ejemplo-práctico-en-r" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="ejemplo-práctico-en-r"><span class="header-section-number">2.3</span> Ejemplo práctico en R</h2>
+<p>Con el fin de ilustrar el funcionamiento del estimador de Nadaraya-Watson, se simula una muestra de observaciones provenientes de una función seno contaminada con ruido aleatorio.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">999</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generación de datos simulados</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span><span class="sc">*</span>pi, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sin</span>(t) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">sd =</span> <span class="fl">0.2</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajuste Nadaraya-Watson usando ksmooth</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>nw_fit <span class="ot">&lt;-</span> <span class="fu">ksmooth</span>(</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> t,</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> x,</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">kernel =</span> <span class="st">"normal"</span>,</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">bandwidth =</span> <span class="fl">0.3</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualización</span></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(t, x,</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"gray"</span>,</span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Estimación de Nadaraya-Watson"</span>,</span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"t"</span>,</span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"x(t)"</span>)</span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(nw_fit,</span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"black"</span>,</span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="taller2_R_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>El gráfico anterior muestra cómo el estimador suaviza las observaciones ruidosas para aproximar la función subyacente mediante un promedio ponderado local.</p>
+<p>La línea roja representa la curva suavizada obtenida mediante el estimador de Nadaraya-Watson, mientras que los puntos grises corresponden a las observaciones originales.</p>
+</section>
+<section id="interpretación-teórica" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="interpretación-teórica"><span class="header-section-number">2.4</span> Interpretación teórica</h2>
+<p>El estimador de Nadaraya-Watson corresponde a un promedio ponderado local donde las observaciones más cercanas al punto de evaluación reciben mayor peso mediante una función kernel.</p>
+<p>Este procedimiento permite:</p>
+<ul>
+<li>Reducir el ruido presente en observaciones discretizadas.</li>
+<li>Estimar funciones subyacentes sin asumir una forma paramétrica específica</li>
+<li>Obtener aproximaciones suaves de datos funcionales</li>
+</ul>
+<p>En el contexto de análisis de datos funcionales, este estimador constituye una herramienta fundamental para la reconstrucción de trayectorias funcionales observadas con error.</p>
 </section>
 </section>
 
